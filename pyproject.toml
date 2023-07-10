@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "anam-earth-be-fastapi"
+version = "0.1.0"
+description = ""
+authors = ["Jeongseop Lim <jseoplim@gmail.com>"]
+readme = "README.md"
+packages = [{include = "anam_earth_be_fastapi", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
