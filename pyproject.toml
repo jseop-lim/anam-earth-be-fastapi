@@ -9,7 +9,6 @@ packages = [{include = "anam_earth_be_fastapi", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 
-
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
 pytest = "^7.4.0"
@@ -17,3 +16,16 @@ pytest = "^7.4.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+# Lint Configurations
+[tool.isort]
+force_single_line = "True"
+profile = "black"
+line_length = "120"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.black]
+preview = "True"
+line-length = "120"
+target-version = ['py310']
+skip-string-normalization = "True"
