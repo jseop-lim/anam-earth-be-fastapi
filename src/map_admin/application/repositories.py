@@ -8,3 +8,7 @@ class NodeRepository(ABC):
     @abstractmethod
     def get_all_nodes(self) -> list[Node]:
         raise NotImplementedError
+
+    @abstractmethod
+    def create_node(self, node: Node) -> None:
+        raise NotImplementedError
