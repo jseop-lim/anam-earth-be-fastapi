@@ -18,6 +18,9 @@ mypy = "^1.4.1"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
 # Lint Configurations
 [tool.isort]
 force_single_line = "True"
@@ -34,10 +37,4 @@ skip-string-normalization = "True"
 # Typing Configurations
 [tool.mypy]
 python_version = "3.11"
-disallow_any_expr = true
-disallow_any_unimported = true
-disallow_untyped_defs = true
-check_untyped_defs = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unused_configs = true
+strict = true
