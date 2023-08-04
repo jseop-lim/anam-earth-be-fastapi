@@ -15,8 +15,8 @@ from map_admin.domain.value_objects import Point
 def mock_node_repo() -> mock.Mock:
     mock_node_repo: mock.Mock = mock.Mock(spec_set=NodeRepository)
     mock_node_repo.get_all_nodes.return_value = [
-        Node(name='A', point=Point(longitude=Decimal('1.0'), latitude=Decimal('2.0'))),
-        Node(name='B', point=Point(longitude=Decimal('3.0'), latitude=Decimal('4.0'))),
+        Node(name="A", point=Point(longitude=Decimal("1.0"), latitude=Decimal("2.0"))),
+        Node(name="B", point=Point(longitude=Decimal("3.0"), latitude=Decimal("4.0"))),
     ]
     return mock_node_repo
 
@@ -39,8 +39,12 @@ def test_list_nodes(
     assert mock_list_nodes_presenter.present.call_args_list == [
         mock.call(
             output_data_list=[
-                ListNodesOutputData(name='A', longitude=Decimal('1.0'), latitude=Decimal('2.0')),
-                ListNodesOutputData(name='B', longitude=Decimal('3.0'), latitude=Decimal('4.0')),
+                ListNodesOutputData(
+                    name="A", longitude=Decimal("1.0"), latitude=Decimal("2.0")
+                ),
+                ListNodesOutputData(
+                    name="B", longitude=Decimal("3.0"), latitude=Decimal("4.0")
+                ),
             ],
         ),
     ]

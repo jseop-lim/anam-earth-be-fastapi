@@ -22,19 +22,19 @@ def test_create_nodes(
         node_repo=mock_node_repo,
     ).execute(
         input_data=CreateNodeInputData(
-            name='A',
-            longitude=Decimal('1.0'),
-            latitude=Decimal('2.0'),
+            name="A",
+            longitude=Decimal("1.0"),
+            latitude=Decimal("2.0"),
         ),
     )
 
     assert mock_node_repo.create_node.call_args_list == [
         mock.call(
             node=Node(
-                name='A',
+                name="A",
                 point=Point(
-                    longitude=Decimal('1.0'),
-                    latitude=Decimal('2.0'),
+                    longitude=Decimal("1.0"),
+                    latitude=Decimal("2.0"),
                 ),
             ),
         ),

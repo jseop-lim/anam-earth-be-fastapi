@@ -10,6 +10,6 @@ class Point:
 
 
 class RoadQuality(StrEnum):
-    HIGH = '상'
-    MEDIUM = '중'
-    LOW = '하'
+    HIGH = "상"
+    MEDIUM = "중"
+    LOW = "하"

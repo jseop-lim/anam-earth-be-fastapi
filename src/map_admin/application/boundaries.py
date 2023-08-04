@@ -1,8 +1,6 @@
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
-from map_admin.application.dtos import CreateNodeInputData
-from map_admin.application.dtos import ListNodesOutputData
+from map_admin.application.dtos import CreateNodeInputData, ListNodesOutputData
 
 
 class ListNodesInputBoundary(ABC):
