@@ -11,5 +11,4 @@
     "python.testing.pytestEnabled": true,
     "mypy-type-checker.importStrategy": "fromEnvironment",
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "python.formatting.provider": "black",
 }
