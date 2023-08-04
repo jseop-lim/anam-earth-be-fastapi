@@ -1,7 +1,5 @@
 [flake8]
-max-line-length = 120
-extend-ignore = E203
 count = True
-exclude =
-    */settings/*.py
-    */__init__.py
+exclude = .git
+extend-ignore = E203
+max-line-length = 88
