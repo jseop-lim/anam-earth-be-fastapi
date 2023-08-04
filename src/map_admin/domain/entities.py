@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from map_admin.domain.value_objects import Point
-from map_admin.domain.value_objects import RoadQuality
+from map_admin.domain.value_objects import Point, RoadQuality
 
 
 @dataclass(kw_only=True)
