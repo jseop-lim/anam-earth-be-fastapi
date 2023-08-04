@@ -23,16 +23,16 @@ pythonpath = ["src"]
 
 # Lint Configurations
 [tool.isort]
-force_single_line = "True"
+force_single_line = true
 profile = "black"
-line_length = "120"
+line_length = 120
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.black]
-preview = "True"
-line-length = "120"
-target-version = ['py310']
-skip-string-normalization = "True"
+preview = true
+line-length = 120
+target-version = ["py310"]
+skip-string-normalization = true
 
 # Typing Configurations
 [tool.mypy]
