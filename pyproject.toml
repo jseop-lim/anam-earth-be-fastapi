@@ -8,6 +8,7 @@ packages = [{include = "anam_earth_be_fastapi", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+dependency-injector = "^4.41.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
