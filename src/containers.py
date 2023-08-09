@@ -6,9 +6,17 @@ from map_admin.presentation.presenters import ListNodesJsonPresenter
 
 
 class Container(containers.DeclarativeContainer):
-    list_nodes_json_presenter = providers.Singleton(ListNodesJsonPresenter)
+    config = providers.Configuration()
+
+    list_nodes_json_presenter = providers.Singleton(
+        ListNodesJsonPresenter,
+    )
+    node_repository = providers.Factory(
+        FileNodeRepository,
+        file_path=config.file.path,
+    )
     list_nodes_use_case = providers.Factory(
         ListNodesUseCase,
-        node_repo=FileNodeRepository(file_path="data/nodes.json"),
+        node_repo=node_repository,
         output_boundary=list_nodes_json_presenter,
     )
