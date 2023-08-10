@@ -8,8 +8,8 @@ from map_admin.application.dtos import ListNodesOutputData
 
 class NodeJsonViewModel(TypedDict):
     name: str
-    longitude: str
-    latitude: str
+    longitude: float
+    latitude: float
 
 
 ListNodesJsonViewModel: TypeAlias = list[NodeJsonViewModel]
@@ -20,8 +20,8 @@ class ListNodesJsonPresenter(ListNodesOutputBoundary):
         self._view_model: ListNodesJsonViewModel = [
             NodeJsonViewModel(
                 name=output_data.name,
-                longitude=f"{output_data.longitude:.6f}",
-                latitude=f"{output_data.latitude:.6f}",
+                longitude=float(output_data.longitude),
+                latitude=float(output_data.latitude),
             )
             for output_data in output_data_list
         ]
