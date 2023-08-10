@@ -6,19 +6,19 @@ from map_admin.application.boundaries import ListNodesOutputBoundary
 from map_admin.application.dtos import ListNodesOutputData
 
 
-class NodeJsonViewModel(TypedDict):
+class NodePydanticViewModel(TypedDict):
     name: str
     longitude: float
     latitude: float
 
 
-ListNodesJsonViewModel: TypeAlias = list[NodeJsonViewModel]
+ListNodesPydanticViewModel: TypeAlias = list[NodePydanticViewModel]
 
 
-class ListNodesJsonPresenter(ListNodesOutputBoundary):
+class ListNodesPydanticPresenter(ListNodesOutputBoundary):
     def present(self, output_data_list: list[ListNodesOutputData]) -> None:
-        self._view_model: ListNodesJsonViewModel = [
-            NodeJsonViewModel(
+        self._view_model: ListNodesPydanticViewModel = [
+            NodePydanticViewModel(
                 name=output_data.name,
                 longitude=float(output_data.longitude),
                 latitude=float(output_data.latitude),
@@ -26,5 +26,5 @@ class ListNodesJsonPresenter(ListNodesOutputBoundary):
             for output_data in output_data_list
         ]
 
-    def get_view_model(self) -> ListNodesJsonViewModel:
+    def get_view_model(self) -> ListNodesPydanticViewModel:
         return self._view_model
