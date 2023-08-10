@@ -22,11 +22,9 @@ router = APIRouter()
 @inject
 async def list_nodes(
     use_case: ListNodesInputBoundary = Depends(Provide[Container.list_nodes_use_case]),
-    presenter: ListNodesJsonPresenter = Depends(
-        Provide[Container.list_nodes_json_presenter]
-    ),
 ) -> ListNodesJsonViewModel:
-    use_case.execute()
+    presenter = ListNodesJsonPresenter()
+    use_case.execute(output_boundary=presenter)
     return presenter.get_view_model()
 
 
