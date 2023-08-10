@@ -1,8 +1,15 @@
+from decimal import Decimal
+
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
+from pydantic import BaseModel
 
 from containers import Container
-from map_admin.application.boundaries import ListNodesInputBoundary
+from map_admin.application.boundaries import (
+    CreateNodeInputBoundary,
+    ListNodesInputBoundary,
+)
+from map_admin.application.dtos import CreateNodeInputData
 from map_admin.presentation.presenters import (
     ListNodesJsonPresenter,
     ListNodesJsonViewModel,
@@ -21,3 +28,27 @@ async def list_nodes(
 ) -> ListNodesJsonViewModel:
     use_case.execute()
     return presenter.get_view_model()
+
+
+class CreateNodeRequest(BaseModel):
+    name: str
+    longitude: float
+    latitude: float
+
+
+@router.post("/nodes", status_code=status.HTTP_201_CREATED)
+@inject
+async def create_node(
+    node: CreateNodeRequest,
+    use_case: CreateNodeInputBoundary = Depends(
+        Provide[Container.create_node_use_case]
+    ),
+) -> str:
+    use_case.execute(
+        input_data=CreateNodeInputData(
+            name=node.name,
+            longitude=Decimal(str(node.longitude)),
+            latitude=Decimal(str(node.latitude)),
+        ),
+    )
+    return "Success"
