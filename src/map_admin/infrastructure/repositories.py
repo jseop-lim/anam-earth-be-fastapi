@@ -29,10 +29,7 @@ class FileNode(TypedDict):
 
 
 class FileNodeRepository(NodeRepository):
-    def __init__(
-        self,
-        file_path: str,
-    ) -> None:
+    def __init__(self, file_path: str) -> None:
         self.file_path = file_path
 
     def get_all_nodes(self) -> list[Node]:

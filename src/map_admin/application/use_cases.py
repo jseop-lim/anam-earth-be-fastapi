@@ -27,16 +27,10 @@ class ListNodesUseCase(ListNodesInputBoundary):
 
 
 class CreateNodeUseCase(CreateNodeInputBoundary):
-    def __init__(
-        self,
-        node_repo: NodeRepository,
-    ) -> None:
+    def __init__(self, node_repo: NodeRepository) -> None:
         self.node_repo = node_repo
 
-    def execute(
-        self,
-        input_data: CreateNodeInputData,
-    ) -> None:
+    def execute(self, input_data: CreateNodeInputData) -> None:
         node: Node = Node(
             name=input_data.name,
             point=Point(
