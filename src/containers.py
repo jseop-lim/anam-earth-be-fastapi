@@ -6,7 +6,9 @@ from map_admin.presentation.presenters import ListNodesJsonPresenter
 
 
 class Container(containers.DeclarativeContainer):
-    config = providers.Configuration()
+    config = providers.Configuration(
+        strict=True,
+    )
 
     list_nodes_json_presenter = providers.Singleton(
         ListNodesJsonPresenter,
