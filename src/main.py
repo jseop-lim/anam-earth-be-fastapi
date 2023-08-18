@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
+from config import Settings
 from containers import Container
 from map_admin.presentation import apis as map_admin_apis
-from settings import Settings
 
 container = Container()
 container.config.from_dict(Settings().model_dump())
