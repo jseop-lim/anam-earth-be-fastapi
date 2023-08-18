@@ -7,6 +7,7 @@ from map_admin.application.dtos import ListNodesOutputData
 
 
 class NodePydanticViewModel(TypedDict):
+    id: int
     name: str
     longitude: float
     latitude: float
@@ -19,6 +20,7 @@ class ListNodesPydanticPresenter(ListNodesOutputBoundary):
     def present(self, output_data_list: list[ListNodesOutputData]) -> None:
         self._view_model: ListNodesPydanticViewModel = [
             NodePydanticViewModel(
+                id=output_data.id,
                 name=output_data.name,
                 longitude=float(output_data.longitude),
                 latitude=float(output_data.latitude),
