@@ -32,8 +32,9 @@ def test_list_nodes(
 ) -> None:
     ListNodesUseCase(
         node_repo=mock_node_repo,
+    ).execute(
         output_boundary=mock_list_nodes_presenter,
-    ).execute()
+    )
 
     assert mock_node_repo.get_all_nodes.called
     assert mock_list_nodes_presenter.present.call_args_list == [

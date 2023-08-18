@@ -8,6 +8,10 @@ packages = [{include = "anam_earth_be_fastapi", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+dependency-injector = "^4.41.0"
+pydantic = "^2.1.1"
+pydantic-settings = "^2.0.2"
+fastapi = "^0.101.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
@@ -16,6 +20,7 @@ mypy = "^1.4.1"
 black = "^23.7.0"
 isort = "^5.12.0"
 flake8 = "^6.1.0"
+httpx = "^0.24.1"
 
 [build-system]
 requires = ["poetry-core"]
