@@ -17,6 +17,7 @@ class ListNodesUseCase(ListNodesInputBoundary):
         nodes: list[Node] = self.node_repo.get_all_nodes()
         output_data_list: list[ListNodesOutputData] = [
             ListNodesOutputData(
+                id=node.id,
                 name=node.name,
                 longitude=node.point.longitude,
                 latitude=node.point.latitude,
@@ -31,7 +32,9 @@ class CreateNodeUseCase(CreateNodeInputBoundary):
         self.node_repo = node_repo
 
     def execute(self, input_data: CreateNodeInputData) -> None:
+        node_id: int = self.node_repo.get_next_id()
         node: Node = Node(
+            id=node_id,
             name=input_data.name,
             point=Point(
                 longitude=input_data.longitude,

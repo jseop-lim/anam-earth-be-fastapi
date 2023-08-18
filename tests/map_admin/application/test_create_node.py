@@ -12,7 +12,9 @@ from map_admin.domain.value_objects import Point
 
 @pytest.fixture()
 def mock_node_repo() -> mock.Mock:
-    return mock.Mock(spec_set=NodeRepository)
+    mock_node_repo = mock.Mock(spec_set=NodeRepository)
+    mock_node_repo.get_next_id.side_effect = [1]
+    return mock_node_repo
 
 
 def test_create_nodes(
@@ -31,6 +33,7 @@ def test_create_nodes(
     assert mock_node_repo.create_node.call_args_list == [
         mock.call(
             node=Node(
+                id=1,
                 name="A",
                 point=Point(
                     longitude=Decimal("1.0"),

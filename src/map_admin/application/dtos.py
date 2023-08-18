@@ -4,6 +4,7 @@ from decimal import Decimal
 
 @dataclass(frozen=True, kw_only=True)
 class ListNodesOutputData:
+    id: int
     name: str
     longitude: Decimal
     latitude: Decimal
