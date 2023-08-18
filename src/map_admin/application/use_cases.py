@@ -1,9 +1,14 @@
 from map_admin.application.boundaries import (
     CreateNodeInputBoundary,
+    CreateNodeOutputBoundary,
     ListNodesInputBoundary,
     ListNodesOutputBoundary,
 )
-from map_admin.application.dtos import CreateNodeInputData, ListNodesOutputData
+from map_admin.application.dtos import (
+    CreateNodeInputData,
+    CreateNodeOutputData,
+    ListNodesOutputData,
+)
 from map_admin.application.repositories import NodeRepository
 from map_admin.domain.entities import Node
 from map_admin.domain.value_objects import Point
@@ -31,9 +36,13 @@ class CreateNodeUseCase(CreateNodeInputBoundary):
     def __init__(self, node_repo: NodeRepository) -> None:
         self.node_repo = node_repo
 
-    def execute(self, input_data: CreateNodeInputData) -> None:
+    def execute(
+        self,
+        input_data: CreateNodeInputData,
+        output_boundary: CreateNodeOutputBoundary,
+    ) -> None:
         node_id: int = self.node_repo.get_next_id()
-        node: Node = Node(
+        node = Node(
             id=node_id,
             name=input_data.name,
             point=Point(
@@ -42,3 +51,7 @@ class CreateNodeUseCase(CreateNodeInputBoundary):
             ),
         )
         self.node_repo.create_node(node=node)
+        output_data = CreateNodeOutputData(
+            id=node_id,
+        )
+        output_boundary.present(output_data=output_data)
