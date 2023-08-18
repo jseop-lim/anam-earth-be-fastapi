@@ -8,13 +8,20 @@ from map_admin.domain.value_objects import Point
 
 
 class FakeNodeRepository(NodeRepository):
+    def get_next_id(self) -> int:
+        return 3
+
     def get_all_nodes(self) -> list[Node]:
         return [
             Node(
-                name="A", point=Point(longitude=Decimal("1.0"), latitude=Decimal("2.0"))
+                id=1,
+                name="A",
+                point=Point(longitude=Decimal("1.0"), latitude=Decimal("2.0")),
             ),
             Node(
-                name="B", point=Point(longitude=Decimal("3.0"), latitude=Decimal("4.0"))
+                id=2,
+                name="B",
+                point=Point(longitude=Decimal("3.0"), latitude=Decimal("4.0")),
             ),
         ]
 
@@ -23,6 +30,7 @@ class FakeNodeRepository(NodeRepository):
 
 
 class FileNode(TypedDict):
+    id: int
     name: str
     longitude: str
     latitude: str
@@ -32,12 +40,19 @@ class FileNodeRepository(NodeRepository):
     def __init__(self, file_path: str) -> None:
         self.file_path = file_path
 
+    def get_next_id(self) -> int:
+        with open(self.file_path, "r") as file:
+            nodes: list[FileNode] = json.load(file)
+
+        return max((node["id"] for node in nodes), default=0) + 1
+
     def get_all_nodes(self) -> list[Node]:
         with open(self.file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         return [
             Node(
+                id=node["id"],
                 name=node["name"],
                 point=Point(
                     longitude=Decimal(node["longitude"]),
@@ -53,6 +68,7 @@ class FileNodeRepository(NodeRepository):
 
         nodes.append(
             {
+                "id": node.id,
                 "name": node.name,
                 "longitude": str(node.point.longitude),
                 "latitude": str(node.point.latitude),
