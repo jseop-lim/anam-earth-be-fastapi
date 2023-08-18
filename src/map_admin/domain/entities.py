@@ -6,6 +6,7 @@ from map_admin.domain.value_objects import Point, RoadQuality
 
 @dataclass(kw_only=True)
 class Node:
+    id: int
     name: str
     point: Point
 
