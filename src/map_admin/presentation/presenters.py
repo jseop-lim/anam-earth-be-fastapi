@@ -1,12 +1,15 @@
 from typing import TypeAlias
 
-from typing_extensions import TypedDict
+from pydantic import BaseModel
 
-from map_admin.application.boundaries import ListNodesOutputBoundary
-from map_admin.application.dtos import ListNodesOutputData
+from map_admin.application.boundaries import (
+    CreateNodeOutputBoundary,
+    ListNodesOutputBoundary,
+)
+from map_admin.application.dtos import CreateNodeOutputData, ListNodesOutputData
 
 
-class NodePydanticViewModel(TypedDict):
+class NodePydanticViewModel(BaseModel):
     id: int
     name: str
     longitude: float
@@ -29,4 +32,18 @@ class ListNodesPydanticPresenter(ListNodesOutputBoundary):
         ]
 
     def get_view_model(self) -> ListNodesPydanticViewModel:
+        return self._view_model
+
+
+class CreateNodePydanticViewModel(BaseModel):
+    id: int
+
+
+class CreateNodePydanticPresenter(CreateNodeOutputBoundary):
+    def present(self, output_data: CreateNodeOutputData) -> None:
+        self._view_model = CreateNodePydanticViewModel(
+            id=output_data.id,
+        )
+
+    def get_view_model(self) -> CreateNodePydanticViewModel:
         return self._view_model
