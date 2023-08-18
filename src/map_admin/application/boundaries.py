@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 
-from map_admin.application.dtos import CreateNodeInputData, ListNodesOutputData
+from map_admin.application.dtos import (
+    CreateNodeInputData,
+    CreateNodeOutputData,
+    ListNodesOutputData,
+)
 
 
 class ListNodesOutputBoundary(ABC):
@@ -15,7 +19,17 @@ class ListNodesInputBoundary(ABC):
         raise NotImplementedError
 
 
+class CreateNodeOutputBoundary(ABC):
+    @abstractmethod
+    def present(self, output_data: CreateNodeOutputData) -> None:
+        raise NotImplementedError
+
+
 class CreateNodeInputBoundary(ABC):
     @abstractmethod
-    def execute(self, input_data: CreateNodeInputData) -> None:
+    def execute(
+        self,
+        input_data: CreateNodeInputData,
+        output_boundary: CreateNodeOutputBoundary,
+    ) -> None:
         raise NotImplementedError

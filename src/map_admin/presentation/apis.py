@@ -11,6 +11,8 @@ from map_admin.application.boundaries import (
 )
 from map_admin.application.dtos import CreateNodeInputData
 from map_admin.presentation.presenters import (
+    CreateNodePydanticPresenter,
+    CreateNodePydanticViewModel,
     ListNodesPydanticPresenter,
     ListNodesPydanticViewModel,
 )
@@ -41,12 +43,14 @@ async def create_node(
     use_case: CreateNodeInputBoundary = Depends(
         Provide[Container.create_node_use_case]
     ),
-) -> str:
+) -> CreateNodePydanticViewModel:
+    presneter = CreateNodePydanticPresenter()
     use_case.execute(
         input_data=CreateNodeInputData(
             name=node.name,
             longitude=Decimal(str(node.longitude)),
             latitude=Decimal(str(node.latitude)),
         ),
+        output_boundary=presneter,
     )
-    return "Success"
+    return presneter.get_view_model()
