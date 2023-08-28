@@ -170,3 +170,32 @@ def test_update_node(
         {"id": 1, "name": "Node 1 Updated", "longitude": "5.0", "latitude": "6.0"},
         {"id": 2, "name": "Node 2", "longitude": "3.0", "latitude": "4.0"},
     ]
+
+
+def test_delete_node(
+    temp_file_path: str,
+) -> None:
+    nodes: list[FileNode] = [
+        {"id": 1, "name": "Node 1", "longitude": "1.0", "latitude": "2.0"},
+        {"id": 2, "name": "Node 2", "longitude": "3.0", "latitude": "4.0"},
+    ]
+    with open(temp_file_path, "w") as file:
+        json.dump(nodes, file)
+
+    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo.delete_node(
+        node=Node(
+            id=1,
+            name="Node 1",
+            point=Point(
+                longitude=Decimal("1.0"),
+                latitude=Decimal("2.0"),
+            ),
+        ),
+    )
+
+    with open(temp_file_path, "r") as file:
+        result: list[FileNode] = json.load(file)
+    assert result == [
+        {"id": 2, "name": "Node 2", "longitude": "3.0", "latitude": "4.0"},
+    ]
