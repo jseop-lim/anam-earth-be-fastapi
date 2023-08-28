@@ -62,6 +62,24 @@ class FileNodeRepository(NodeRepository):
             for node in nodes
         ]
 
+    def get_node_by_id(self, node_id: int) -> Node:
+        with open(self.file_path, "r") as file:
+            nodes: list[FileNode] = json.load(file)
+
+        try:
+            node: FileNode = next(node for node in nodes if node["id"] == node_id)
+        except StopIteration:
+            raise super().NodeNotFoundError
+
+        return Node(
+            id=node["id"],
+            name=node["name"],
+            point=Point(
+                longitude=Decimal(node["longitude"]),
+                latitude=Decimal(node["latitude"]),
+            ),
+        )
+
     def create_node(self, node: Node) -> None:
         with open(self.file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
@@ -74,6 +92,20 @@ class FileNodeRepository(NodeRepository):
                 "latitude": str(node.point.latitude),
             }
         )
+
+        with open(self.file_path, "w") as file:
+            json.dump(nodes, file, indent=4)
+
+    def update_node(self, node: Node) -> None:
+        with open(self.file_path, "r") as file:
+            nodes: list[FileNode] = json.load(file)
+
+        for node_dict in nodes:
+            if node_dict["id"] == node.id:
+                node_dict["name"] = node.name
+                node_dict["longitude"] = str(node.point.longitude)
+                node_dict["latitude"] = str(node.point.latitude)
+                break
 
         with open(self.file_path, "w") as file:
             json.dump(nodes, file, indent=4)
