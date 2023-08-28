@@ -7,10 +7,15 @@ from pydantic import BaseModel
 from containers import Container
 from map_admin.application.boundaries import (
     CreateNodeInputBoundary,
+    DeleteNodeInputBoundary,
     ListNodesInputBoundary,
     PartialUpdateNodeInputBoundary,
 )
-from map_admin.application.dtos import CreateNodeInputData, PartialUpdateNodeInputData
+from map_admin.application.dtos import (
+    CreateNodeInputData,
+    DeleteNodeInputData,
+    PartialUpdateNodeInputData,
+)
 from map_admin.presentation.presenters import (
     CreateNodePydanticPresenter,
     CreateNodePydanticViewModel,
@@ -99,6 +104,40 @@ async def partial_update_node(
         )
     # TODO: Use custom exception handler
     except PartialUpdateNodeInputBoundary.NodeNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Node not found",
+        )
+
+
+@router.delete(
+    "/nodes/{node_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        # TODO: Separate by defining as a new variable
+        status.HTTP_404_NOT_FOUND: {
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Node not found"},
+                },
+            },
+        },
+    },
+)
+@inject
+async def delete_node(
+    node_id: int,
+    use_case: DeleteNodeInputBoundary = Depends(
+        Provide[Container.delete_node_use_case]
+    ),
+) -> None:
+    try:
+        use_case.execute(
+            input_data=DeleteNodeInputData(
+                id=node_id,
+            ),
+        )
+    except DeleteNodeInputBoundary.NodeNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Node not found",
