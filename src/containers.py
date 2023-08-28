@@ -1,6 +1,10 @@
 from dependency_injector import containers, providers
 
-from map_admin.application.use_cases import CreateNodeUseCase, ListNodesUseCase
+from map_admin.application.use_cases import (
+    CreateNodeUseCase,
+    ListNodesUseCase,
+    PartialUpdateNodeUseCase,
+)
 from map_admin.infrastructure.repositories import FileNodeRepository
 
 
@@ -19,5 +23,9 @@ class Container(containers.DeclarativeContainer):
     )
     create_node_use_case = providers.Factory(
         CreateNodeUseCase,
+        node_repo=node_repository,
+    )
+    partial_update_node_use_case = providers.Factory(
+        PartialUpdateNodeUseCase,
         node_repo=node_repository,
     )
