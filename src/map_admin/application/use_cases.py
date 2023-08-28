@@ -1,6 +1,7 @@
 from map_admin.application.boundaries import (
     CreateNodeInputBoundary,
     CreateNodeOutputBoundary,
+    DeleteNodeInputBoundary,
     ListNodesInputBoundary,
     ListNodesOutputBoundary,
     PartialUpdateNodeInputBoundary,
@@ -8,6 +9,7 @@ from map_admin.application.boundaries import (
 from map_admin.application.dtos import (
     CreateNodeInputData,
     CreateNodeOutputData,
+    DeleteNodeInputData,
     ListNodesOutputData,
     PartialUpdateNodeInputData,
 )
@@ -79,3 +81,16 @@ class PartialUpdateNodeUseCase(PartialUpdateNodeInputBoundary):
                 ),
             )
         self.node_repo.update_node(node=node)
+
+
+class DeleteNodeUseCase(DeleteNodeInputBoundary):
+    def __init__(self, node_repo: NodeRepository) -> None:
+        self.node_repo = node_repo
+
+    def execute(self, input_data: DeleteNodeInputData) -> None:
+        try:
+            node: Node = self.node_repo.get_node_by_id(node_id=input_data.id)
+        except NodeRepository.NodeNotFoundError:
+            raise super().NodeNotFoundError
+
+        self.node_repo.delete_node(node=node)

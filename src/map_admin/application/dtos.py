@@ -28,3 +28,8 @@ class PartialUpdateNodeInputData:
     name: str | None
     longitude: Decimal | None
     latitude: Decimal | None
+
+
+@dataclass(frozen=True, kw_only=True)
+class DeleteNodeInputData:
+    id: int
