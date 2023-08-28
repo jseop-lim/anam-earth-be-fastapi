@@ -6,6 +6,7 @@ from typing import Generator
 
 import pytest
 
+from map_admin.application.repositories import NodeRepository
 from map_admin.domain.entities import Node
 from map_admin.domain.value_objects import Point
 from map_admin.infrastructure.repositories import FileNode, FileNodeRepository
@@ -86,6 +87,36 @@ def test_get_all_nodes(
     ]
 
 
+def test_get_node_by_id(
+    temp_file_path: str,
+) -> None:
+    nodes: list[FileNode] = [
+        {"id": 1, "name": "Node 1", "longitude": "1.0", "latitude": "2.0"},
+    ]
+    with open(temp_file_path, "w") as file:
+        json.dump(nodes, file)
+
+    node_repo = FileNodeRepository(file_path=temp_file_path)
+    result = node_repo.get_node_by_id(node_id=1)
+
+    assert result == Node(
+        id=1,
+        name="Node 1",
+        point=Point(
+            longitude=Decimal("1.0"),
+            latitude=Decimal("2.0"),
+        ),
+    )
+
+
+def test_get_node_by_id_with_invalid_id(
+    temp_file_path: str,
+) -> None:
+    node_repo = FileNodeRepository(file_path=temp_file_path)
+    with pytest.raises(NodeRepository.NodeNotFoundError):
+        node_repo.get_node_by_id(node_id=2)
+
+
 def test_create_node(
     temp_file_path: str,
 ) -> None:
@@ -109,3 +140,33 @@ def test_create_node(
         "longitude": "5.0",
         "latitude": "6.0",
     }
+
+
+def test_update_node(
+    temp_file_path: str,
+) -> None:
+    nodes: list[FileNode] = [
+        {"id": 1, "name": "Node 1", "longitude": "1.0", "latitude": "2.0"},
+        {"id": 2, "name": "Node 2", "longitude": "3.0", "latitude": "4.0"},
+    ]
+    with open(temp_file_path, "w") as file:
+        json.dump(nodes, file)
+
+    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo.update_node(
+        node=Node(
+            id=1,
+            name="Node 1 Updated",
+            point=Point(
+                longitude=Decimal("5.0"),
+                latitude=Decimal("6.0"),
+            ),
+        ),
+    )
+
+    with open(temp_file_path, "r") as file:
+        result: list[FileNode] = json.load(file)
+    assert result == [
+        {"id": 1, "name": "Node 1 Updated", "longitude": "5.0", "latitude": "6.0"},
+        {"id": 2, "name": "Node 2", "longitude": "3.0", "latitude": "4.0"},
+    ]
