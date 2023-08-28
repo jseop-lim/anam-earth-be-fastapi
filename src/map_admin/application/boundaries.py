@@ -4,6 +4,7 @@ from map_admin.application.dtos import (
     CreateNodeInputData,
     CreateNodeOutputData,
     ListNodesOutputData,
+    PartialUpdateNodeInputData,
 )
 
 
@@ -33,3 +34,12 @@ class CreateNodeInputBoundary(ABC):
         output_boundary: CreateNodeOutputBoundary,
     ) -> None:
         raise NotImplementedError
+
+
+class PartialUpdateNodeInputBoundary(ABC):
+    @abstractmethod
+    def execute(self, input_data: PartialUpdateNodeInputData) -> None:
+        raise NotImplementedError
+
+    class NodeNotFoundError(Exception):
+        """노드를 찾지 못할 때 발생하는 에러"""

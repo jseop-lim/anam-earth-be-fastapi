@@ -20,3 +20,11 @@ class CreateNodeInputData:
 @dataclass(frozen=True, kw_only=True)
 class CreateNodeOutputData:
     id: int
+
+
+@dataclass(frozen=True, kw_only=True)
+class PartialUpdateNodeInputData:
+    id: int
+    name: str | None
+    longitude: Decimal | None
+    latitude: Decimal | None

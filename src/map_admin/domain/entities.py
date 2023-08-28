@@ -10,6 +10,12 @@ class Node:
     name: str
     point: Point
 
+    def update_name(self, name: str) -> None:
+        self.name = name
+
+    def update_point(self, point: Point) -> None:
+        self.point = point
+
 
 @dataclass(kw_only=True)
 class Arc:
