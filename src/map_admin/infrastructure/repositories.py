@@ -25,8 +25,30 @@ class FakeNodeRepository(NodeRepository):
             ),
         ]
 
+    def get_node_by_id(self, node_id: int) -> Node:
+        if node_id == 1:
+            return Node(
+                id=1,
+                name="A",
+                point=Point(longitude=Decimal("1.0"), latitude=Decimal("2.0")),
+            )
+        elif node_id == 2:
+            return Node(
+                id=2,
+                name="B",
+                point=Point(longitude=Decimal("3.0"), latitude=Decimal("4.0")),
+            )
+        else:
+            raise super().NodeNotFoundError
+
     def create_node(self, node: Node) -> None:
         print(f"Create node: {node}")
+
+    def update_node(self, node: Node) -> None:
+        print(f"Update node: {node}")
+
+    def delete_node(self, node: Node) -> None:
+        print(f"Delete node: {node}")
 
 
 class FileNode(TypedDict):
