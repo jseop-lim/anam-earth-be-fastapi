@@ -3,11 +3,13 @@ from map_admin.application.boundaries import (
     CreateNodeOutputBoundary,
     ListNodesInputBoundary,
     ListNodesOutputBoundary,
+    PartialUpdateNodeInputBoundary,
 )
 from map_admin.application.dtos import (
     CreateNodeInputData,
     CreateNodeOutputData,
     ListNodesOutputData,
+    PartialUpdateNodeInputData,
 )
 from map_admin.application.repositories import NodeRepository
 from map_admin.domain.entities import Node
@@ -55,3 +57,25 @@ class CreateNodeUseCase(CreateNodeInputBoundary):
             id=node_id,
         )
         output_boundary.present(output_data=output_data)
+
+
+class PartialUpdateNodeUseCase(PartialUpdateNodeInputBoundary):
+    def __init__(self, node_repo: NodeRepository) -> None:
+        self.node_repo = node_repo
+
+    def execute(self, input_data: PartialUpdateNodeInputData) -> None:
+        try:
+            node: Node = self.node_repo.get_node_by_id(node_id=input_data.id)
+        except NodeRepository.NodeNotFoundError:
+            raise super().NodeNotFoundError
+
+        if input_data.name:
+            node.update_name(name=input_data.name)
+        if input_data.longitude or input_data.latitude:
+            node.update_point(
+                point=Point(
+                    longitude=input_data.longitude or node.point.longitude,
+                    latitude=input_data.latitude or node.point.latitude,
+                ),
+            )
+        self.node_repo.update_node(node=node)
