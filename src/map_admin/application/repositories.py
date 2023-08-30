@@ -24,5 +24,9 @@ class NodeRepository(ABC):
     def update_node(self, node: Node) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def delete_node(self, node: Node) -> None:
+        raise NotImplementedError
+
     class NodeNotFoundError(Exception):
         """노드를 찾지 못할 때 발생하는 에러"""

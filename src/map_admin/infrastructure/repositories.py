@@ -25,8 +25,30 @@ class FakeNodeRepository(NodeRepository):
             ),
         ]
 
+    def get_node_by_id(self, node_id: int) -> Node:
+        if node_id == 1:
+            return Node(
+                id=1,
+                name="A",
+                point=Point(longitude=Decimal("1.0"), latitude=Decimal("2.0")),
+            )
+        elif node_id == 2:
+            return Node(
+                id=2,
+                name="B",
+                point=Point(longitude=Decimal("3.0"), latitude=Decimal("4.0")),
+            )
+        else:
+            raise super().NodeNotFoundError
+
     def create_node(self, node: Node) -> None:
         print(f"Create node: {node}")
+
+    def update_node(self, node: Node) -> None:
+        print(f"Update node: {node}")
+
+    def delete_node(self, node: Node) -> None:
+        print(f"Delete node: {node}")
 
 
 class FileNode(TypedDict):
@@ -44,7 +66,7 @@ class FileNodeRepository(NodeRepository):
         with open(self.file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
-        return max((node["id"] for node in nodes), default=0) + 1
+        return max((node_dict["id"] for node_dict in nodes), default=0) + 1
 
     def get_all_nodes(self) -> list[Node]:
         with open(self.file_path, "r") as file:
@@ -52,14 +74,14 @@ class FileNodeRepository(NodeRepository):
 
         return [
             Node(
-                id=node["id"],
-                name=node["name"],
+                id=node_dict["id"],
+                name=node_dict["name"],
                 point=Point(
-                    longitude=Decimal(node["longitude"]),
-                    latitude=Decimal(node["latitude"]),
+                    longitude=Decimal(node_dict["longitude"]),
+                    latitude=Decimal(node_dict["latitude"]),
                 ),
             )
-            for node in nodes
+            for node_dict in nodes
         ]
 
     def get_node_by_id(self, node_id: int) -> Node:
@@ -67,7 +89,9 @@ class FileNodeRepository(NodeRepository):
             nodes: list[FileNode] = json.load(file)
 
         try:
-            node: FileNode = next(node for node in nodes if node["id"] == node_id)
+            node: FileNode = next(
+                node_dict for node_dict in nodes if node_dict["id"] == node_id
+            )
         except StopIteration:
             raise super().NodeNotFoundError
 
@@ -106,6 +130,15 @@ class FileNodeRepository(NodeRepository):
                 node_dict["longitude"] = str(node.point.longitude)
                 node_dict["latitude"] = str(node.point.latitude)
                 break
+
+        with open(self.file_path, "w") as file:
+            json.dump(nodes, file, indent=4)
+
+    def delete_node(self, node: Node) -> None:
+        with open(self.file_path, "r") as file:
+            nodes: list[FileNode] = json.load(file)
+
+        nodes = [node_dict for node_dict in nodes if node_dict["id"] != node.id]
 
         with open(self.file_path, "w") as file:
             json.dump(nodes, file, indent=4)
