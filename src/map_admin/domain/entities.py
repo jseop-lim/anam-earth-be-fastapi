@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 
 from map_admin.domain.value_objects import Point, RoadQuality
@@ -9,6 +9,7 @@ class Node:
     id: int
     name: str
     point: Point
+    edges: set["Arc"] = field(default_factory=set, init=False)
 
     def update_name(self, name: str) -> None:
         self.name = name
@@ -19,8 +20,7 @@ class Node:
 
 @dataclass(kw_only=True)
 class Arc:
-    start_node: Node
-    end_node: Node
+    nodes: tuple[Node, Node]
     vertical_distance: Decimal
     horizontal_distance: Decimal
     is_stair: bool
