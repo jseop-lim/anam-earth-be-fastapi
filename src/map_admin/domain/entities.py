@@ -9,7 +9,7 @@ class Node:
     id: int
     name: str
     point: Point
-    edges: set["Arc"] = field(default_factory=set, init=False)
+    edges: set["Edge"] = field(default_factory=set, init=False)
 
     def update_name(self, name: str) -> None:
         self.name = name
@@ -19,7 +19,7 @@ class Node:
 
 
 @dataclass(kw_only=True)
-class Arc:
+class Edge:
     nodes: tuple[Node, Node]
     vertical_distance: Decimal
     horizontal_distance: Decimal
