@@ -1,4 +1,5 @@
 from map_admin.application.boundaries import (
+    CreateEdgeInputBoundary,
     CreateNodeInputBoundary,
     CreateNodeOutputBoundary,
     DeleteNodeInputBoundary,
@@ -7,6 +8,7 @@ from map_admin.application.boundaries import (
     PartialUpdateNodeInputBoundary,
 )
 from map_admin.application.dtos import (
+    CreateEdgeInputData,
     CreateNodeInputData,
     CreateNodeOutputData,
     DeleteNodeInputData,
@@ -15,7 +17,7 @@ from map_admin.application.dtos import (
 )
 from map_admin.application.repositories import NodeRepository
 from map_admin.domain.entities import Node
-from map_admin.domain.value_objects import Point
+from map_admin.domain.value_objects import Point, RoadQuality
 
 
 class ListNodesUseCase(ListNodesInputBoundary):
@@ -94,3 +96,23 @@ class DeleteNodeUseCase(DeleteNodeInputBoundary):
             raise super().NodeNotFoundError
 
         self.node_repo.delete_node(node=node)
+
+
+class CreateEdgeUseCase(CreateEdgeInputBoundary):
+    def __init__(self, node_repo: NodeRepository) -> None:
+        self.node_repo = node_repo
+
+    def execute(self, input_data: CreateEdgeInputData) -> None:
+        nodes: tuple[Node, Node] = (
+            self.node_repo.get_node_by_id(node_id=input_data.node_ids[0]),
+            self.node_repo.get_node_by_id(node_id=input_data.node_ids[1]),
+        )
+        nodes[0].add_edge(
+            other_node=nodes[1],
+            vertical_distance=input_data.vertical_distance,
+            horizontal_distance=input_data.horizontal_distance,
+            is_stair=input_data.is_stair,
+            is_step=input_data.is_step,
+            quality=RoadQuality(input_data.quality),
+        )
+        self.node_repo.update_node(node=nodes[0])
