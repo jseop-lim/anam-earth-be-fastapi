@@ -23,7 +23,7 @@ def mock_create_node_presenter() -> mock.Mock:
     return mock.Mock(spec_set=CreateNodeOutputBoundary)
 
 
-def test_create_nodes(
+def test_create_node(
     mock_node_repo: mock.Mock,
     mock_create_node_presenter: mock.Mock,
 ) -> None:
