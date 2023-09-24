@@ -17,6 +17,7 @@ class Container(containers.DeclarativeContainer):
     node_repository = providers.Factory(
         FileNodeRepository,
         node_file_path=config.file_path.node,
+        edge_file_path=config.file_path.edge,
     )
     list_nodes_use_case = providers.Factory(
         ListNodesUseCase,

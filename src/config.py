@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class FilePathSettings(BaseSettings):
     node: FilePath = Field(validation_alias="node")
+    edge: FilePath = Field(validation_alias="edge")
 
 
 class Settings(BaseSettings):

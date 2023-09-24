@@ -62,8 +62,10 @@ class FileNodeRepository(NodeRepository):
     def __init__(
         self,
         node_file_path: str,
+        edge_file_path: str,
     ) -> None:
         self.node_file_path = node_file_path
+        self.edge_file_path = edge_file_path
 
     def get_next_id(self) -> int:
         with open(self.node_file_path, "r") as file:
