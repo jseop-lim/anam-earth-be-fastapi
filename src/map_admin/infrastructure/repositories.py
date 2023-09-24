@@ -3,8 +3,8 @@ from decimal import Decimal
 from typing import TypedDict
 
 from map_admin.application.repositories import NodeRepository
-from map_admin.domain.entities import Node
-from map_admin.domain.value_objects import Point
+from map_admin.domain.entities import Edge, Node
+from map_admin.domain.value_objects import Point, RoadQuality
 
 
 class FakeNodeRepository(NodeRepository):
@@ -58,6 +58,15 @@ class FileNode(TypedDict):
     latitude: str
 
 
+class FileEdge(TypedDict):
+    node_ids: tuple[int, int]
+    vertical_distance: str
+    horizontal_distance: str
+    is_stair: bool
+    is_step: bool
+    quality: str
+
+
 class FileNodeRepository(NodeRepository):
     def __init__(
         self,
@@ -100,6 +109,9 @@ class FileNodeRepository(NodeRepository):
         except StopIteration:
             raise super().NodeNotFoundError
 
+        with open(self.edge_file_path, "r") as file:
+            edges: list[FileEdge] = json.load(file)
+
         return Node(
             id=node["id"],
             name=node["name"],
@@ -107,6 +119,18 @@ class FileNodeRepository(NodeRepository):
                 longitude=Decimal(node["longitude"]),
                 latitude=Decimal(node["latitude"]),
             ),
+            edges=[
+                Edge(
+                    node_ids=edge["node_ids"],
+                    vertical_distance=Decimal(edge["vertical_distance"]),
+                    horizontal_distance=Decimal(edge["horizontal_distance"]),
+                    is_stair=edge["is_stair"],
+                    is_step=edge["is_step"],
+                    quality=RoadQuality(edge["quality"]),
+                )
+                for edge in edges
+                if node["id"] in edge["node_ids"]
+            ],
         )
 
     def create_node(self, node: Node) -> None:
@@ -139,6 +163,26 @@ class FileNodeRepository(NodeRepository):
         with open(self.node_file_path, "w") as file:
             json.dump(nodes, file, indent=4)
 
+        with open(self.edge_file_path, "r") as file:
+            edges: list[FileEdge] = json.load(file)
+
+        edges = [
+            edge_dict for edge_dict in edges if node.id not in edge_dict["node_ids"]
+        ] + [
+            FileEdge(
+                node_ids=edge.node_ids,
+                vertical_distance=str(edge.vertical_distance),
+                horizontal_distance=str(edge.horizontal_distance),
+                is_stair=edge.is_stair,
+                is_step=edge.is_step,
+                quality=edge.quality,
+            )
+            for edge in node.edges
+        ]
+
+        with open(self.edge_file_path, "w") as file:
+            json.dump(edges, file, indent=4)
+
     def delete_node(self, node: Node) -> None:
         with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
@@ -147,3 +191,13 @@ class FileNodeRepository(NodeRepository):
 
         with open(self.node_file_path, "w") as file:
             json.dump(nodes, file, indent=4)
+
+        with open(self.edge_file_path, "r") as file:
+            edges: list[FileEdge] = json.load(file)
+
+        edges = [
+            edge_dict for edge_dict in edges if node.id not in edge_dict["node_ids"]
+        ]
+
+        with open(self.edge_file_path, "w") as file:
+            json.dump(edges, file, indent=4)
