@@ -10,7 +10,18 @@ class Node:
     id: int
     name: str
     point: Point
-    edges: set["Edge"] = field(default_factory=set, init=False)
+    edges: list["Edge"] = field(default_factory=list)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Node):
+            return NotImplemented
+        return all(
+            [
+                self.id == other.id,
+                self.name == other.name,
+                self.point == other.point,
+            ]
+        )
 
     def update_name(self, name: str) -> None:
         self.name = name
@@ -30,24 +41,24 @@ class Node:
         if self == other_node:
             raise ValueError("Edge cannot connect to itself")
 
-        if any(other_node in edge.nodes for edge in self.edges):
+        if any(other_node.id in edge.node_ids for edge in self.edges):
             raise ValueError("Edge already exists")
 
         edge = Edge(
-            nodes=(self, other_node),
+            node_ids=(self.id, other_node.id),
             vertical_distance=vertical_distance,
             horizontal_distance=horizontal_distance,
             is_stair=is_stair,
             is_step=is_step,
             quality=quality,
         )
-        self.edges.add(edge)
-        other_node.edges.add(edge)
+        self.edges.append(edge)
+        other_node.edges.append(edge)
 
 
 @dataclass(kw_only=True)
 class Edge:
-    nodes: tuple[Node, Node]
+    node_ids: tuple[int, int]
     vertical_distance: Decimal
     horizontal_distance: Decimal
     is_stair: bool
@@ -55,10 +66,19 @@ class Edge:
     quality: RoadQuality
 
     def __post_init__(self) -> None:
-        if self.nodes[0] == self.nodes[1]:
+        if self.node_ids[0] == self.node_ids[1]:
             raise ValueError("Edge cannot connect to itself")
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Edge):
             return NotImplemented
-        return self.nodes == other.nodes or self.nodes == tuple(reversed(other.nodes))
+        return all(
+            [
+                sorted(self.node_ids) == sorted(other.node_ids),
+                self.vertical_distance == other.vertical_distance,
+                self.horizontal_distance == other.horizontal_distance,
+                self.is_stair == other.is_stair,
+                self.is_step == other.is_step,
+                self.quality == other.quality,
+            ]
+        )
