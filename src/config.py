@@ -2,11 +2,13 @@ from pydantic import Field, FilePath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class FileSettings(BaseSettings):
-    path: FilePath = Field(validation_alias="path", default="")
+class FilePathSettings(BaseSettings):
+    node: FilePath = Field(validation_alias="node")
 
 
 class Settings(BaseSettings):
-    file: FileSettings = Field(default_factory=FileSettings)
+    model_config = SettingsConfigDict(env_file=".env", env_nested_delimiter="__")
 
-    model_config = SettingsConfigDict(env_file=".env", env_nested_delimiter="_")
+    file_path: FilePathSettings = Field(
+        default_factory=FilePathSettings,  # type: ignore
+    )

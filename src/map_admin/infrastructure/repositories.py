@@ -59,17 +59,20 @@ class FileNode(TypedDict):
 
 
 class FileNodeRepository(NodeRepository):
-    def __init__(self, file_path: str) -> None:
-        self.file_path = file_path
+    def __init__(
+        self,
+        node_file_path: str,
+    ) -> None:
+        self.node_file_path = node_file_path
 
     def get_next_id(self) -> int:
-        with open(self.file_path, "r") as file:
+        with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         return max((node_dict["id"] for node_dict in nodes), default=0) + 1
 
     def get_all_nodes(self) -> list[Node]:
-        with open(self.file_path, "r") as file:
+        with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         return [
@@ -85,7 +88,7 @@ class FileNodeRepository(NodeRepository):
         ]
 
     def get_node_by_id(self, node_id: int) -> Node:
-        with open(self.file_path, "r") as file:
+        with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         try:
@@ -105,7 +108,7 @@ class FileNodeRepository(NodeRepository):
         )
 
     def create_node(self, node: Node) -> None:
-        with open(self.file_path, "r") as file:
+        with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         nodes.append(
@@ -117,11 +120,11 @@ class FileNodeRepository(NodeRepository):
             }
         )
 
-        with open(self.file_path, "w") as file:
+        with open(self.node_file_path, "w") as file:
             json.dump(nodes, file, indent=4)
 
     def update_node(self, node: Node) -> None:
-        with open(self.file_path, "r") as file:
+        with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         for node_dict in nodes:
@@ -131,14 +134,14 @@ class FileNodeRepository(NodeRepository):
                 node_dict["latitude"] = str(node.point.latitude)
                 break
 
-        with open(self.file_path, "w") as file:
+        with open(self.node_file_path, "w") as file:
             json.dump(nodes, file, indent=4)
 
     def delete_node(self, node: Node) -> None:
-        with open(self.file_path, "r") as file:
+        with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
         nodes = [node_dict for node_dict in nodes if node_dict["id"] != node.id]
 
-        with open(self.file_path, "w") as file:
+        with open(self.node_file_path, "w") as file:
             json.dump(nodes, file, indent=4)
