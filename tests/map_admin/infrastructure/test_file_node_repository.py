@@ -48,7 +48,7 @@ def test_get_next_id(
     with open(temp_file_path, "w") as file:
         json.dump(nodes, file)
 
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     result = node_repo.get_next_id()
 
     assert result == expected_next_id
@@ -64,7 +64,7 @@ def test_get_all_nodes(
     with open(temp_file_path, "w") as file:
         json.dump(nodes, file)
 
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     result = node_repo.get_all_nodes()
 
     assert result == [
@@ -96,7 +96,7 @@ def test_get_node_by_id(
     with open(temp_file_path, "w") as file:
         json.dump(nodes, file)
 
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     result = node_repo.get_node_by_id(node_id=1)
 
     assert result == Node(
@@ -112,7 +112,7 @@ def test_get_node_by_id(
 def test_get_node_by_id_with_invalid_id(
     temp_file_path: str,
 ) -> None:
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     with pytest.raises(NodeRepository.NodeNotFoundError):
         node_repo.get_node_by_id(node_id=2)
 
@@ -129,7 +129,7 @@ def test_create_node(
         ),
     )
 
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     node_repo.create_node(node=new_node)
 
     with open(temp_file_path, "r") as file:
@@ -152,7 +152,7 @@ def test_update_node(
     with open(temp_file_path, "w") as file:
         json.dump(nodes, file)
 
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     node_repo.update_node(
         node=Node(
             id=1,
@@ -182,7 +182,7 @@ def test_delete_node(
     with open(temp_file_path, "w") as file:
         json.dump(nodes, file)
 
-    node_repo = FileNodeRepository(file_path=temp_file_path)
+    node_repo = FileNodeRepository(node_file_path=temp_file_path)
     node_repo.delete_node(
         node=Node(
             id=1,
