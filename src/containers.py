@@ -1,6 +1,7 @@
 from dependency_injector import containers, providers
 
 from map_admin.application.use_cases import (
+    CreateEdgeUseCase,
     CreateNodeUseCase,
     DeleteNodeUseCase,
     ListNodesUseCase,
@@ -33,5 +34,9 @@ class Container(containers.DeclarativeContainer):
     )
     delete_node_use_case = providers.Factory(
         DeleteNodeUseCase,
+        node_repo=node_repository,
+    )
+    create_edge_use_case = providers.Factory(
+        CreateEdgeUseCase,
         node_repo=node_repository,
     )
