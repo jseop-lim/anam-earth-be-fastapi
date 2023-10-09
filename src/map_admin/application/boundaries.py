@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from map_admin.application.dtos import (
+    CreateEdgeInputData,
     CreateNodeInputData,
     CreateNodeOutputData,
     DeleteNodeInputData,
@@ -49,6 +50,15 @@ class PartialUpdateNodeInputBoundary(ABC):
 class DeleteNodeInputBoundary(ABC):
     @abstractmethod
     def execute(self, input_data: DeleteNodeInputData) -> None:
+        raise NotImplementedError
+
+    class NodeNotFoundError(Exception):
+        """노드를 찾지 못할 때 발생하는 에러"""
+
+
+class CreateEdgeInputBoundary(ABC):
+    @abstractmethod
+    def execute(self, input_data: CreateEdgeInputData) -> None:
         raise NotImplementedError
 
     class NodeNotFoundError(Exception):

@@ -33,3 +33,13 @@ class PartialUpdateNodeInputData:
 @dataclass(frozen=True, kw_only=True)
 class DeleteNodeInputData:
     id: int
+
+
+@dataclass(frozen=True, kw_only=True)
+class CreateEdgeInputData:
+    node_ids: tuple[int, int]
+    vertical_distance: Decimal
+    horizontal_distance: Decimal
+    is_stair: bool
+    is_step: bool
+    quality: str
