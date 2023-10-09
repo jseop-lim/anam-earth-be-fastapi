@@ -7,7 +7,7 @@ from map_admin.application.boundaries import CreateEdgeInputBoundary
 from map_admin.application.dtos import CreateEdgeInputData
 from map_admin.application.repositories import NodeRepository
 from map_admin.application.use_cases import CreateEdgeUseCase
-from map_admin.domain.entities import Node
+from map_admin.domain.entities import Edge, Node
 from map_admin.domain.value_objects import Point, RoadQuality
 
 
@@ -56,6 +56,84 @@ def test_create_edge_with_invalid_node_id() -> None:
     mock_node_repo.get_node_by_id.side_effect = [NodeRepository.NodeNotFoundError]
 
     with pytest.raises(CreateEdgeInputBoundary.NodeNotFoundError):
+        CreateEdgeUseCase(
+            node_repo=mock_node_repo,
+        ).execute(
+            input_data=CreateEdgeInputData(
+                node_ids=(1, 2),
+                vertical_distance=Decimal("1.0"),
+                horizontal_distance=Decimal("2.0"),
+                is_stair=False,
+                is_step=False,
+                quality=RoadQuality.HIGH,
+            ),
+        )
+
+    assert not mock_node_repo.update_node.called
+
+
+def test_create_edge_with_same_node() -> None:
+    node = Node(
+        id=1,
+        name="A",
+        point=Point(
+            longitude=Decimal("1.0"),
+            latitude=Decimal("2.0"),
+        ),
+    )
+    mock_node_repo = mock.Mock(spec_set=NodeRepository)
+    mock_node_repo.get_node_by_id.side_effect = [node, node]
+
+    with pytest.raises(CreateEdgeInputBoundary.ConnectingSameNodeError):
+        CreateEdgeUseCase(
+            node_repo=mock_node_repo,
+        ).execute(
+            input_data=CreateEdgeInputData(
+                node_ids=(1, 1),
+                vertical_distance=Decimal("1.0"),
+                horizontal_distance=Decimal("2.0"),
+                is_stair=False,
+                is_step=False,
+                quality=RoadQuality.HIGH,
+            ),
+        )
+
+    assert not mock_node_repo.update_node.called
+
+
+def test_create_edge_with_duplication() -> None:
+    edge = Edge(
+        node_ids=(1, 2),
+        vertical_distance=Decimal("1.0"),
+        horizontal_distance=Decimal("2.0"),
+        is_stair=False,
+        is_step=False,
+        quality=RoadQuality.HIGH,
+    )
+    nodes: dict[int, Node] = {
+        1: Node(
+            id=1,
+            name="A",
+            point=Point(
+                longitude=Decimal("1.0"),
+                latitude=Decimal("2.0"),
+            ),
+            edges=[edge],
+        ),
+        2: Node(
+            id=2,
+            name="B",
+            point=Point(
+                longitude=Decimal("3.0"),
+                latitude=Decimal("4.0"),
+            ),
+            edges=[edge],
+        ),
+    }
+    mock_node_repo = mock.Mock(spec_set=NodeRepository)
+    mock_node_repo.get_node_by_id.side_effect = [nodes[1], nodes[2]]
+
+    with pytest.raises(CreateEdgeInputBoundary.AlreadyConnectedNodesError):
         CreateEdgeUseCase(
             node_repo=mock_node_repo,
         ).execute(
