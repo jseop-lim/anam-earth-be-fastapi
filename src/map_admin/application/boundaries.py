@@ -60,3 +60,6 @@ class CreateEdgeInputBoundary(ABC):
     @abstractmethod
     def execute(self, input_data: CreateEdgeInputData) -> None:
         raise NotImplementedError
+
+    class NodeNotFoundError(Exception):
+        """노드를 찾지 못할 때 발생하는 에러"""

@@ -103,10 +103,14 @@ class CreateEdgeUseCase(CreateEdgeInputBoundary):
         self.node_repo = node_repo
 
     def execute(self, input_data: CreateEdgeInputData) -> None:
-        nodes: tuple[Node, Node] = (
-            self.node_repo.get_node_by_id(node_id=input_data.node_ids[0]),
-            self.node_repo.get_node_by_id(node_id=input_data.node_ids[1]),
-        )
+        try:
+            nodes: tuple[Node, Node] = (
+                self.node_repo.get_node_by_id(node_id=input_data.node_ids[0]),
+                self.node_repo.get_node_by_id(node_id=input_data.node_ids[1]),
+            )
+        except NodeRepository.NodeNotFoundError:
+            raise super().NodeNotFoundError
+
         nodes[0].add_edge(
             other_node=nodes[1],
             vertical_distance=input_data.vertical_distance,
