@@ -2,6 +2,10 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Self
 
+from map_admin.domain.exceptions import (
+    AlreadyConnectedNodesError,
+    ConnectingSameNodeError,
+)
 from map_admin.domain.value_objects import Point, RoadQuality
 
 
@@ -39,10 +43,10 @@ class Node:
         quality: RoadQuality,
     ) -> None:
         if self == other_node:
-            raise ValueError("Edge cannot connect to itself")
+            raise ConnectingSameNodeError
 
         if any(other_node.id in edge.node_ids for edge in self.edges):
-            raise ValueError("Edge already exists")
+            raise AlreadyConnectedNodesError
 
         edge = Edge(
             node_ids=(self.id, other_node.id),
@@ -67,7 +71,7 @@ class Edge:
 
     def __post_init__(self) -> None:
         if self.node_ids[0] == self.node_ids[1]:
-            raise ValueError("Edge cannot connect to itself")
+            raise ConnectingSameNodeError
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Edge):
