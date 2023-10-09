@@ -180,4 +180,14 @@ async def create_edge(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid Node ID",
         )
+    except CreateEdgeInputBoundary.ConnectingSameNodeError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Same node",
+        )
+    except CreateEdgeInputBoundary.AlreadyConnectedNodesError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Already exsiting edge",
+        )
     return "OK"
