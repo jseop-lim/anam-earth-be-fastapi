@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Literal
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -6,12 +7,14 @@ from pydantic import BaseModel
 
 from containers import Container
 from map_admin.application.boundaries import (
+    CreateEdgeInputBoundary,
     CreateNodeInputBoundary,
     DeleteNodeInputBoundary,
     ListNodesInputBoundary,
     PartialUpdateNodeInputBoundary,
 )
 from map_admin.application.dtos import (
+    CreateEdgeInputData,
     CreateNodeInputData,
     DeleteNodeInputData,
     PartialUpdateNodeInputData,
@@ -142,3 +145,49 @@ async def delete_node(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Node not found",
         )
+
+
+class CreateEdgeRequest(BaseModel):
+    node_ids: tuple[int, int]
+    vertical_distance: float
+    horizontal_distance: float
+    is_stair: bool
+    is_step: bool
+    quality: Literal["상", "중", "하"]
+
+
+@router.post("/edges", status_code=status.HTTP_201_CREATED)
+@inject
+async def create_edge(
+    edge: CreateEdgeRequest,
+    use_case: CreateEdgeInputBoundary = Depends(
+        Provide[Container.create_edge_use_case]
+    ),
+) -> str:
+    try:
+        use_case.execute(
+            input_data=CreateEdgeInputData(
+                node_ids=edge.node_ids,
+                vertical_distance=Decimal(str(edge.vertical_distance)),
+                horizontal_distance=Decimal(str(edge.horizontal_distance)),
+                is_stair=edge.is_stair,
+                is_step=edge.is_step,
+                quality=edge.quality,
+            ),
+        )
+    except CreateEdgeInputBoundary.NodeNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Node ID",
+        )
+    except CreateEdgeInputBoundary.ConnectingSameNodeError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Same node",
+        )
+    except CreateEdgeInputBoundary.AlreadyConnectedNodesError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Already exsiting edge",
+        )
+    return "OK"
