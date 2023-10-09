@@ -17,6 +17,10 @@ from map_admin.application.dtos import (
 )
 from map_admin.application.repositories import NodeRepository
 from map_admin.domain.entities import Node
+from map_admin.domain.exceptions import (
+    AlreadyConnectedNodesError,
+    ConnectingSameNodeError,
+)
 from map_admin.domain.value_objects import Point, RoadQuality
 
 
@@ -111,12 +115,18 @@ class CreateEdgeUseCase(CreateEdgeInputBoundary):
         except NodeRepository.NodeNotFoundError:
             raise super().NodeNotFoundError
 
-        nodes[0].add_edge(
-            other_node=nodes[1],
-            vertical_distance=input_data.vertical_distance,
-            horizontal_distance=input_data.horizontal_distance,
-            is_stair=input_data.is_stair,
-            is_step=input_data.is_step,
-            quality=RoadQuality(input_data.quality),
-        )
+        try:
+            nodes[0].add_edge(
+                other_node=nodes[1],
+                vertical_distance=input_data.vertical_distance,
+                horizontal_distance=input_data.horizontal_distance,
+                is_stair=input_data.is_stair,
+                is_step=input_data.is_step,
+                quality=RoadQuality(input_data.quality),
+            )
+        except ConnectingSameNodeError:
+            raise super().ConnectingSameNodeError
+        except AlreadyConnectedNodesError:
+            raise super().AlreadyConnectedNodesError
+
         self.node_repo.update_node(node=nodes[0])
