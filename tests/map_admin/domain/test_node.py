@@ -3,6 +3,10 @@ from decimal import Decimal
 import pytest
 
 from map_admin.domain.entities import Edge, Node
+from map_admin.domain.exceptions import (
+    AlreadyConnectedNodesError,
+    ConnectingSameNodeError,
+)
 from map_admin.domain.value_objects import Point, RoadQuality
 
 
@@ -130,7 +134,7 @@ def test_add_edge_error_with_same_node() -> None:
         edges=[],
     )
 
-    with pytest.raises(ValueError, match="Edge cannot connect to itself"):
+    with pytest.raises(ConnectingSameNodeError):
         node.add_edge(
             other_node=node,
             vertical_distance=Decimal("1.0"),
@@ -171,7 +175,7 @@ def test_add_edge_error_with_existing_edge() -> None:
         quality=RoadQuality.HIGH,
     )
 
-    with pytest.raises(ValueError, match="Edge already exists"):
+    with pytest.raises(AlreadyConnectedNodesError):
         nodes[1].add_edge(
             other_node=nodes[2],
             vertical_distance=Decimal("1.0"),

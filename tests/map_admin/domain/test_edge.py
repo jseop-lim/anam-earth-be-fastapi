@@ -3,11 +3,12 @@ from decimal import Decimal
 import pytest
 
 from map_admin.domain.entities import Edge
+from map_admin.domain.exceptions import ConnectingSameNodeError
 from map_admin.domain.value_objects import RoadQuality
 
 
 def test_validate_edge_connecting_different_nodes() -> None:
-    with pytest.raises(ValueError, match="Edge cannot connect to itself"):
+    with pytest.raises(ConnectingSameNodeError):
         Edge(
             node_ids=(1, 1),
             vertical_distance=Decimal("1.0"),
