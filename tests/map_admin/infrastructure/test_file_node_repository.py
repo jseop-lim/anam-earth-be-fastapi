@@ -71,17 +71,31 @@ def test_get_next_id(
 
 def test_get_all_nodes(
     temp_node_file_path: str,
+    temp_edge_file_path: str,
 ) -> None:
     nodes: list[FileNode] = [
         {"id": 1, "name": "Node 1", "longitude": "1.0", "latitude": "2.0"},
         {"id": 2, "name": "Node 2", "longitude": "3.0", "latitude": "4.0"},
+        {"id": 3, "name": "Node 3", "longitude": "5.0", "latitude": "6.0"},
+    ]
+    edges: list[FileEdge] = [
+        {
+            "node_ids": (2, 1),
+            "vertical_distance": "1.0",
+            "horizontal_distance": "2.0",
+            "is_stair": False,
+            "is_step": False,
+            "quality": "상",
+        },
     ]
     with open(temp_node_file_path, "w") as file:
         json.dump(nodes, file)
+    with open(temp_edge_file_path, "w") as file:
+        json.dump(edges, file)
 
     node_repo = FileNodeRepository(
         node_file_path=temp_node_file_path,
-        edge_file_path="",
+        edge_file_path=temp_edge_file_path,
     )
     result = node_repo.get_all_nodes()
 
@@ -93,6 +107,16 @@ def test_get_all_nodes(
                 longitude=Decimal("1.0"),
                 latitude=Decimal("2.0"),
             ),
+            edges=[
+                Edge(
+                    node_ids=(2, 1),
+                    vertical_distance=Decimal("1.0"),
+                    horizontal_distance=Decimal("2.0"),
+                    is_stair=False,
+                    is_step=False,
+                    quality=RoadQuality.HIGH,
+                ),
+            ],
         ),
         Node(
             id=2,
@@ -101,6 +125,25 @@ def test_get_all_nodes(
                 longitude=Decimal("3.0"),
                 latitude=Decimal("4.0"),
             ),
+            edges=[
+                Edge(
+                    node_ids=(2, 1),
+                    vertical_distance=Decimal("1.0"),
+                    horizontal_distance=Decimal("2.0"),
+                    is_stair=False,
+                    is_step=False,
+                    quality=RoadQuality.HIGH,
+                ),
+            ],
+        ),
+        Node(
+            id=3,
+            name="Node 3",
+            point=Point(
+                longitude=Decimal("5.0"),
+                latitude=Decimal("6.0"),
+            ),
+            edges=[],
         ),
     ]
 
