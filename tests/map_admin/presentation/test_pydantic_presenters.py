@@ -1,7 +1,9 @@
 from decimal import Decimal
 
-from map_admin.application.dtos import ListNodesOutputData
+from map_admin.application.dtos import CreateNodeOutputData, ListNodesOutputData
 from map_admin.presentation.presenters import (
+    CreateNodePydanticPresenter,
+    CreateNodePydanticViewModel,
     ListNodesPydanticPresenter,
     NodePydanticViewModel,
 )
@@ -40,3 +42,12 @@ def test_present_list_nodes() -> None:
             latitude=4.0,
         ),
     ]
+
+
+def test_present_create_node() -> None:
+    output_data = CreateNodeOutputData(id=1)
+
+    presenter = CreateNodePydanticPresenter()
+    presenter.present(output_data=output_data)
+
+    assert presenter.get_view_model() == CreateNodePydanticViewModel(id=1)
