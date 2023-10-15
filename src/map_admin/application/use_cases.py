@@ -3,6 +3,8 @@ from map_admin.application.boundaries import (
     CreateNodeInputBoundary,
     CreateNodeOutputBoundary,
     DeleteNodeInputBoundary,
+    ListEdgesInputBoundary,
+    ListEdgesOutputBoundary,
     ListNodesInputBoundary,
     ListNodesOutputBoundary,
     PartialUpdateNodeInputBoundary,
@@ -12,11 +14,12 @@ from map_admin.application.dtos import (
     CreateNodeInputData,
     CreateNodeOutputData,
     DeleteNodeInputData,
+    ListEdgesOutputData,
     ListNodesOutputData,
     PartialUpdateNodeInputData,
 )
 from map_admin.application.repositories import NodeRepository
-from map_admin.domain.entities import Node
+from map_admin.domain.entities import Edge, Node
 from map_admin.domain.exceptions import (
     AlreadyConnectedNodesError,
     ConnectingSameNodeError,
@@ -100,6 +103,39 @@ class DeleteNodeUseCase(DeleteNodeInputBoundary):
             raise super().NodeNotFoundError
 
         self.node_repo.delete_node(node=node)
+
+
+class ListEdgesUseCase(ListEdgesInputBoundary):
+    def __init__(self, node_repo: NodeRepository) -> None:
+        self.node_repo = node_repo
+
+    def execute(self, output_boundary: ListEdgesOutputBoundary) -> None:
+        nodes: list[Node] = self.node_repo.get_all_nodes()
+        node_dict: dict[int, Node] = {node.id: node for node in nodes}
+        edge_dict: dict[tuple[int, ...], Edge] = {
+            tuple(sorted(edge.node_ids)): edge for node in nodes for edge in node.edges
+        }
+        output_data_list: list[ListEdgesOutputData] = [
+            ListEdgesOutputData(
+                nodes=(
+                    ListEdgesOutputData.Node(
+                        id=node_dict[node_ids[0]].id,
+                        name=node_dict[node_ids[0]].name,
+                    ),
+                    ListEdgesOutputData.Node(
+                        id=node_dict[node_ids[1]].id,
+                        name=node_dict[node_ids[1]].name,
+                    ),
+                ),
+                vertical_distance=edge.vertical_distance,
+                horizontal_distance=edge.horizontal_distance,
+                is_stair=edge.is_stair,
+                is_step=edge.is_step,
+                quality=edge.quality.value,
+            )
+            for node_ids, edge in edge_dict.items()
+        ]
+        output_boundary.present(output_data_list=output_data_list)
 
 
 class CreateEdgeUseCase(CreateEdgeInputBoundary):

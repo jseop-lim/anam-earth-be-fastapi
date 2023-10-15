@@ -5,6 +5,7 @@ from map_admin.application.dtos import (
     CreateNodeInputData,
     CreateNodeOutputData,
     DeleteNodeInputData,
+    ListEdgesOutputData,
     ListNodesOutputData,
     PartialUpdateNodeInputData,
 )
@@ -54,6 +55,18 @@ class DeleteNodeInputBoundary(ABC):
 
     class NodeNotFoundError(Exception):
         """노드를 찾지 못할 때 발생하는 에러"""
+
+
+class ListEdgesOutputBoundary(ABC):
+    @abstractmethod
+    def present(self, output_data_list: list[ListEdgesOutputData]) -> None:
+        raise NotImplementedError
+
+
+class ListEdgesInputBoundary(ABC):
+    @abstractmethod
+    def execute(self, output_boundary: ListEdgesOutputBoundary) -> None:
+        raise NotImplementedError
 
 
 class CreateEdgeInputBoundary(ABC):
