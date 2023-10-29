@@ -86,3 +86,18 @@ class Edge:
                 self.quality == other.quality,
             ]
         )
+
+    def update_vertical_distance(self, vertical_distance: Decimal) -> None:
+        self.vertical_distance = vertical_distance
+
+    def update_horizontal_distance(self, horizontal_distance: Decimal) -> None:
+        self.horizontal_distance = horizontal_distance
+
+    def update_is_stair(self, is_stair: bool) -> None:
+        self.is_stair = is_stair
+
+    def update_is_step(self, is_step: bool) -> None:
+        self.is_step = is_step
+
+    def update_quality(self, quality: RoadQuality) -> None:
+        self.quality = quality
