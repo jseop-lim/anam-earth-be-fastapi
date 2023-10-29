@@ -10,6 +10,7 @@ from map_admin.application.boundaries import (
     CreateEdgeInputBoundary,
     CreateNodeInputBoundary,
     DeleteNodeInputBoundary,
+    ListEdgesInputBoundary,
     ListNodesInputBoundary,
     PartialUpdateNodeInputBoundary,
 )
@@ -22,6 +23,8 @@ from map_admin.application.dtos import (
 from map_admin.presentation.presenters import (
     CreateNodePydanticPresenter,
     CreateNodePydanticViewModel,
+    ListEdgesPydanticPresenter,
+    ListEdgesPydanticViewModel,
     ListNodesPydanticPresenter,
     ListNodesPydanticViewModel,
 )
@@ -145,6 +148,16 @@ async def delete_node(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Node not found",
         )
+
+
+@router.get("/edges")
+@inject
+async def list_edges(
+    use_case: ListEdgesInputBoundary = Depends(Provide[Container.list_edges_use_case]),
+) -> ListEdgesPydanticViewModel:
+    presenter = ListEdgesPydanticPresenter()
+    use_case.execute(output_boundary=presenter)
+    return presenter.get_view_model()
 
 
 class CreateEdgeRequest(BaseModel):
