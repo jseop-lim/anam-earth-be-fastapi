@@ -4,9 +4,14 @@ from pydantic import BaseModel
 
 from map_admin.application.boundaries import (
     CreateNodeOutputBoundary,
+    ListEdgesOutputBoundary,
     ListNodesOutputBoundary,
 )
-from map_admin.application.dtos import CreateNodeOutputData, ListNodesOutputData
+from map_admin.application.dtos import (
+    CreateNodeOutputData,
+    ListEdgesOutputData,
+    ListNodesOutputData,
+)
 
 
 class NodePydanticViewModel(BaseModel):
@@ -46,4 +51,48 @@ class CreateNodePydanticPresenter(CreateNodeOutputBoundary):
         )
 
     def get_view_model(self) -> CreateNodePydanticViewModel:
+        return self._view_model
+
+
+class EdgeNodePydanticViewModel(BaseModel):
+    id: int
+    name: str
+
+
+class EdgePydanticViewModel(BaseModel):
+    nodes: tuple[EdgeNodePydanticViewModel, EdgeNodePydanticViewModel]
+    vertical_distance: float
+    horizontal_distance: float
+    is_stair: bool
+    is_step: bool
+    quality: str
+
+
+ListEdgesPydanticViewModel: TypeAlias = list[EdgePydanticViewModel]
+
+
+class ListEdgesPydanticPresenter(ListEdgesOutputBoundary):
+    def present(self, output_data_list: list[ListEdgesOutputData]) -> None:
+        self._view_model: ListEdgesPydanticViewModel = [
+            EdgePydanticViewModel(
+                nodes=(
+                    EdgeNodePydanticViewModel(
+                        id=output_data.nodes[0].id,
+                        name=output_data.nodes[0].name,
+                    ),
+                    EdgeNodePydanticViewModel(
+                        id=output_data.nodes[1].id,
+                        name=output_data.nodes[1].name,
+                    ),
+                ),
+                vertical_distance=float(output_data.vertical_distance),
+                horizontal_distance=float(output_data.horizontal_distance),
+                is_stair=output_data.is_stair,
+                is_step=output_data.is_step,
+                quality=output_data.quality,
+            )
+            for output_data in output_data_list
+        ]
+
+    def get_view_model(self) -> ListEdgesPydanticViewModel:
         return self._view_model

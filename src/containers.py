@@ -4,6 +4,7 @@ from map_admin.application.use_cases import (
     CreateEdgeUseCase,
     CreateNodeUseCase,
     DeleteNodeUseCase,
+    ListEdgesUseCase,
     ListNodesUseCase,
     PartialUpdateNodeUseCase,
 )
@@ -34,6 +35,10 @@ class Container(containers.DeclarativeContainer):
     )
     delete_node_use_case = providers.Factory(
         DeleteNodeUseCase,
+        node_repo=node_repository,
+    )
+    list_edges_use_case = providers.Factory(
+        ListEdgesUseCase,
         node_repo=node_repository,
     )
     create_edge_use_case = providers.Factory(
