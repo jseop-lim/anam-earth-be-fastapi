@@ -42,7 +42,7 @@ def test_create_edge() -> None:
             horizontal_distance=Decimal("2.0"),
             is_stair=False,
             is_step=False,
-            quality=RoadQuality.HIGH,
+            quality=RoadQuality.HIGH.value,
         ),
     )
 
@@ -65,7 +65,7 @@ def test_create_edge_with_invalid_node_id() -> None:
                 horizontal_distance=Decimal("2.0"),
                 is_stair=False,
                 is_step=False,
-                quality=RoadQuality.HIGH,
+                quality=RoadQuality.HIGH.value,
             ),
         )
 
@@ -94,7 +94,7 @@ def test_create_edge_with_same_node() -> None:
                 horizontal_distance=Decimal("2.0"),
                 is_stair=False,
                 is_step=False,
-                quality=RoadQuality.HIGH,
+                quality=RoadQuality.HIGH.value,
             ),
         )
 
@@ -143,7 +143,7 @@ def test_create_edge_with_duplication() -> None:
                 horizontal_distance=Decimal("2.0"),
                 is_stair=False,
                 is_step=False,
-                quality=RoadQuality.HIGH,
+                quality=RoadQuality.HIGH.value,
             ),
         )
 

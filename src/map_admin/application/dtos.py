@@ -36,6 +36,21 @@ class DeleteNodeInputData:
 
 
 @dataclass(frozen=True, kw_only=True)
+class ListEdgesOutputData:
+    @dataclass(frozen=True, kw_only=True)
+    class Node:
+        id: int
+        name: str
+
+    nodes: tuple[Node, Node]
+    vertical_distance: Decimal
+    horizontal_distance: Decimal
+    is_stair: bool
+    is_step: bool
+    quality: str
+
+
+@dataclass(frozen=True, kw_only=True)
 class CreateEdgeInputData:
     node_ids: tuple[int, int]
     vertical_distance: Decimal

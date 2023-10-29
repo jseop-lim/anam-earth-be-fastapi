@@ -86,6 +86,9 @@ class FileNodeRepository(NodeRepository):
         with open(self.node_file_path, "r") as file:
             nodes: list[FileNode] = json.load(file)
 
+        with open(self.edge_file_path, "r") as file:
+            edges: list[FileEdge] = json.load(file)
+
         return [
             Node(
                 id=node_dict["id"],
@@ -94,6 +97,18 @@ class FileNodeRepository(NodeRepository):
                     longitude=Decimal(node_dict["longitude"]),
                     latitude=Decimal(node_dict["latitude"]),
                 ),
+                edges=[
+                    Edge(
+                        node_ids=edge_dict["node_ids"],
+                        vertical_distance=Decimal(edge_dict["vertical_distance"]),
+                        horizontal_distance=Decimal(edge_dict["horizontal_distance"]),
+                        is_stair=edge_dict["is_stair"],
+                        is_step=edge_dict["is_step"],
+                        quality=RoadQuality(edge_dict["quality"]),
+                    )
+                    for edge_dict in edges
+                    if node_dict["id"] in edge_dict["node_ids"]
+                ],
             )
             for node_dict in nodes
         ]
