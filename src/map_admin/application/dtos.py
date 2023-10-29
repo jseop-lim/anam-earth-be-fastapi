@@ -58,3 +58,13 @@ class CreateEdgeInputData:
     is_stair: bool
     is_step: bool
     quality: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class PartialUpdateEdgeInputData:
+    node_ids: tuple[int, int]
+    vertical_distance: Decimal | None
+    horizontal_distance: Decimal | None
+    is_stair: bool | None
+    is_step: bool | None
+    quality: str | None
