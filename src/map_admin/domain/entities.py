@@ -5,6 +5,7 @@ from typing import Self
 from map_admin.domain.exceptions import (
     AlreadyConnectedNodesError,
     ConnectingSameNodeError,
+    NoEdgeExistsBetweenNodesError,
 )
 from map_admin.domain.value_objects import Point, RoadQuality
 
@@ -58,6 +59,39 @@ class Node:
         )
         self.edges.append(edge)
         other_node.edges.append(edge)
+
+    def update_edge(
+        self,
+        other_node: Self,
+        vertical_distance: Decimal | None = None,
+        horizontal_distance: Decimal | None = None,
+        is_stair: bool | None = None,
+        is_step: bool | None = None,
+        quality: RoadQuality | None = None,
+    ) -> None:
+        if self == other_node:
+            raise ConnectingSameNodeError
+        try:
+            edge: Edge = next(
+                edge for edge in self.edges if other_node.id in edge.node_ids
+            )
+        except StopIteration:
+            raise NoEdgeExistsBetweenNodesError
+
+        if vertical_distance is not None:
+            edge.update_vertical_distance(vertical_distance)
+        if horizontal_distance is not None:
+            edge.update_horizontal_distance(horizontal_distance)
+        if is_stair is not None:
+            edge.update_is_stair(is_stair)
+        if is_step is not None:
+            edge.update_is_step(is_step)
+        if quality is not None:
+            edge.update_quality(quality)
+
+        other_node.edges = [
+            edge for edge in other_node.edges if self.id not in edge.node_ids
+        ] + [edge]
 
 
 @dataclass(kw_only=True)
