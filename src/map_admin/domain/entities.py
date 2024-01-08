@@ -93,6 +93,22 @@ class Node:
             edge for edge in other_node.edges if self.id not in edge.node_ids
         ] + [edge]
 
+    def delete_edge(
+        self,
+        other_node: Self,
+    ) -> None:
+        if self == other_node:
+            raise ConnectingSameNodeError
+        try:
+            edge: Edge = next(
+                edge for edge in self.edges if other_node.id in edge.node_ids
+            )
+        except StopIteration:
+            raise NoEdgeExistsBetweenNodesError
+
+        self.edges.remove(edge)
+        other_node.edges.remove(edge)
+
 
 @dataclass(kw_only=True)
 class Edge:
