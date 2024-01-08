@@ -6,7 +6,12 @@
     "python.analysis.typeCheckingMode": "strict",
     "python.testing.pytestArgs": [
         "tests",
-        "-vv"
+        "-vv",
+        "--showlocals",
+        "--tb=auto",
+        "--no-header",
+        // "--no-summary",
+        "--color=yes"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

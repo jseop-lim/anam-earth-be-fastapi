@@ -9,6 +9,7 @@ from containers import Container
 from map_admin.application.boundaries import (
     CreateEdgeInputBoundary,
     CreateNodeInputBoundary,
+    DeleteEdgeInputBoundary,
     DeleteNodeInputBoundary,
     ListEdgesInputBoundary,
     ListNodesInputBoundary,
@@ -18,6 +19,7 @@ from map_admin.application.boundaries import (
 from map_admin.application.dtos import (
     CreateEdgeInputData,
     CreateNodeInputData,
+    DeleteEdgeInputData,
     DeleteNodeInputData,
     PartialUpdateEdgeInputData,
     PartialUpdateNodeInputData,
@@ -220,7 +222,7 @@ class PartialUpdateEdgeRequest(BaseModel):
 @router.patch("/edges")
 @inject
 async def partial_update_edge(
-    edge: PartialUpdateEdgeRequest,
+    edge: PartialUpdateEdgeRequest,  # TODO: Use path parameter
     use_case: PartialUpdateEdgeInputBoundary = Depends(
         Provide[Container.partial_update_edge_use_case]
     ),
@@ -246,16 +248,65 @@ async def partial_update_edge(
         )
     except PartialUpdateEdgeInputBoundary.NodeNotFoundError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,  # TODO: Use 404
             detail="Invalid Node ID",
         )
     except PartialUpdateEdgeInputBoundary.ConnectingSameNodeError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,  # TODO: Use 404
             detail="Same node",
         )
     except PartialUpdateEdgeInputBoundary.EdgeNotFoundError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,  # TODO: Use 404
+            detail="Edge not found",
+        )
+
+
+@router.delete(
+    "/edge/{node_id_1}/{node_id_2}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        # TODO: Separate by defining as a new variable
+        status.HTTP_404_NOT_FOUND: {
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "Node Not Found": {"detail": "Invalid Node ID"},
+                        "Connecting same node": {"detail": "Same node"},
+                        "Edge not found": {"detail": "Edge not found"},
+                    },
+                },
+            },
+        },
+    },
+)
+@inject
+async def delete_edge(
+    node_id_1: int,
+    node_id_2: int,
+    use_case: DeleteEdgeInputBoundary = Depends(
+        Provide[Container.delete_edge_use_case]
+    ),
+) -> None:
+    try:
+        use_case.execute(
+            input_data=DeleteEdgeInputData(
+                node_ids=(node_id_1, node_id_2),
+            ),
+        )
+    except DeleteEdgeInputBoundary.NodeNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invalid Node ID",
+        )
+    except DeleteEdgeInputBoundary.ConnectingSameNodeError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Same node",
+        )
+    except DeleteEdgeInputBoundary.EdgeNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Edge not found",
         )
