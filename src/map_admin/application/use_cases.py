@@ -2,6 +2,7 @@ from map_admin.application.boundaries import (
     CreateEdgeInputBoundary,
     CreateNodeInputBoundary,
     CreateNodeOutputBoundary,
+    DeleteEdgeInputBoundary,
     DeleteNodeInputBoundary,
     ListEdgesInputBoundary,
     ListEdgesOutputBoundary,
@@ -14,6 +15,7 @@ from map_admin.application.dtos import (
     CreateEdgeInputData,
     CreateNodeInputData,
     CreateNodeOutputData,
+    DeleteEdgeInputData,
     DeleteNodeInputData,
     ListEdgesOutputData,
     ListNodesOutputData,
@@ -197,6 +199,29 @@ class PartialUpdateEdgeUseCase(PartialUpdateEdgeInputBoundary):
                     else RoadQuality(input_data.quality)
                 ),
             )
+        except ConnectingSameNodeError:
+            raise super().ConnectingSameNodeError
+        except NoEdgeExistsBetweenNodesError:
+            raise super().EdgeNotFoundError
+
+        self.node_repo.update_node(node=nodes[0])
+
+
+class DeleteEdgeUseCase(DeleteEdgeInputBoundary):
+    def __init__(self, node_repo: NodeRepository) -> None:
+        self.node_repo = node_repo
+
+    def execute(self, input_data: DeleteEdgeInputData) -> None:
+        try:
+            nodes: tuple[Node, Node] = (
+                self.node_repo.get_node_by_id(node_id=input_data.node_ids[0]),
+                self.node_repo.get_node_by_id(node_id=input_data.node_ids[1]),
+            )
+        except NodeRepository.NodeNotFoundError:
+            raise super().NodeNotFoundError
+
+        try:
+            nodes[0].delete_edge(other_node=nodes[1])
         except ConnectingSameNodeError:
             raise super().ConnectingSameNodeError
         except NoEdgeExistsBetweenNodesError:

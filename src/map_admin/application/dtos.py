@@ -68,3 +68,8 @@ class PartialUpdateEdgeInputData:
     is_stair: bool | None
     is_step: bool | None
     quality: str | None
+
+
+@dataclass(frozen=True, kw_only=True)
+class DeleteEdgeInputData:
+    node_ids: tuple[int, int]
