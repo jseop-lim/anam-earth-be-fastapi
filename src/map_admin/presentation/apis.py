@@ -222,7 +222,7 @@ class PartialUpdateEdgeRequest(BaseModel):
 @router.patch("/edges")
 @inject
 async def partial_update_edge(
-    edge: PartialUpdateEdgeRequest,
+    edge: PartialUpdateEdgeRequest,  # TODO: Use path parameter
     use_case: PartialUpdateEdgeInputBoundary = Depends(
         Provide[Container.partial_update_edge_use_case]
     ),
@@ -248,17 +248,17 @@ async def partial_update_edge(
         )
     except PartialUpdateEdgeInputBoundary.NodeNotFoundError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,  # TODO: Use 404
             detail="Invalid Node ID",
         )
     except PartialUpdateEdgeInputBoundary.ConnectingSameNodeError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,  # TODO: Use 404
             detail="Same node",
         )
     except PartialUpdateEdgeInputBoundary.EdgeNotFoundError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,  # TODO: Use 404
             detail="Edge not found",
         )
 
