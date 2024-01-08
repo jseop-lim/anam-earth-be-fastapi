@@ -332,3 +332,104 @@ def test_update_edge_error_with_no_edge_between_nodes() -> None:
             is_step=False,
             quality=RoadQuality.HIGH,
         )
+
+
+def test_delete_edge() -> None:
+    nodes: dict[int, Node] = {
+        1: Node(
+            id=1,
+            name="Node 1",
+            point=Point(
+                longitude=Decimal("1.0"),
+                latitude=Decimal("2.0"),
+            ),
+            edges=[
+                Edge(
+                    node_ids=(1, 2),
+                    vertical_distance=Decimal("1.0"),
+                    horizontal_distance=Decimal("2.0"),
+                    is_stair=False,
+                    is_step=False,
+                    quality=RoadQuality.HIGH,
+                ),
+            ],
+        ),
+        2: Node(
+            id=2,
+            name="Node 2",
+            point=Point(
+                longitude=Decimal("3.0"),
+                latitude=Decimal("4.0"),
+            ),
+            edges=[
+                Edge(
+                    node_ids=(1, 2),
+                    vertical_distance=Decimal("1.0"),
+                    horizontal_distance=Decimal("2.0"),
+                    is_stair=False,
+                    is_step=False,
+                    quality=RoadQuality.HIGH,
+                ),
+            ],
+        ),
+    }
+    deleted_edge = Edge(
+        node_ids=(1, 2),
+        vertical_distance=Decimal("1.0"),
+        horizontal_distance=Decimal("2.0"),
+        is_stair=False,
+        is_step=False,
+        quality=RoadQuality.HIGH,
+    )
+
+    nodes[1].delete_edge(
+        other_node=nodes[2],
+    )
+
+    assert deleted_edge not in nodes[1].edges
+    assert deleted_edge not in nodes[2].edges
+
+
+def test_delete_edge_error_with_same_node() -> None:
+    node = Node(
+        id=1,
+        name="Node 1",
+        point=Point(
+            longitude=Decimal("1.0"),
+            latitude=Decimal("2.0"),
+        ),
+        edges=[],
+    )
+
+    with pytest.raises(ConnectingSameNodeError):
+        node.delete_edge(
+            other_node=node,
+        )
+
+
+def test_delete_edge_error_with_no_edge_between_nodes() -> None:
+    nodes: dict[int, Node] = {
+        1: Node(
+            id=1,
+            name="Node 1",
+            point=Point(
+                longitude=Decimal("1.0"),
+                latitude=Decimal("2.0"),
+            ),
+            edges=[],
+        ),
+        2: Node(
+            id=2,
+            name="Node 2",
+            point=Point(
+                longitude=Decimal("3.0"),
+                latitude=Decimal("4.0"),
+            ),
+            edges=[],
+        ),
+    }
+
+    with pytest.raises(NoEdgeExistsBetweenNodesError):
+        nodes[1].delete_edge(
+            other_node=nodes[2],
+        )
