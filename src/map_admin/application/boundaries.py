@@ -7,6 +7,7 @@ from map_admin.application.dtos import (
     DeleteNodeInputData,
     ListEdgesOutputData,
     ListNodesOutputData,
+    PartialUpdateEdgeInputData,
     PartialUpdateNodeInputData,
 )
 
@@ -82,3 +83,18 @@ class CreateEdgeInputBoundary(ABC):
 
     class AlreadyConnectedNodesError(Exception):
         """이미 연결된 노드끼리 간선으로 연결할 때 발생하는 에러"""
+
+
+class PartialUpdateEdgeInputBoundary(ABC):
+    @abstractmethod
+    def execute(self, input_data: PartialUpdateEdgeInputData) -> None:
+        raise NotImplementedError
+
+    class NodeNotFoundError(Exception):
+        """노드를 찾지 못할 때 발생하는 에러"""
+
+    class ConnectingSameNodeError(Exception):
+        """같은 노드끼리 간선으로 연결할 때 발생하는 에러"""
+
+    class EdgeNotFoundError(Exception):
+        """간선을 찾지 못할 때 발생하는 에러"""

@@ -6,6 +6,7 @@ from map_admin.application.use_cases import (
     DeleteNodeUseCase,
     ListEdgesUseCase,
     ListNodesUseCase,
+    PartialUpdateEdgeUseCase,
     PartialUpdateNodeUseCase,
 )
 from map_admin.infrastructure.repositories import FileNodeRepository
@@ -43,5 +44,9 @@ class Container(containers.DeclarativeContainer):
     )
     create_edge_use_case = providers.Factory(
         CreateEdgeUseCase,
+        node_repo=node_repository,
+    )
+    partial_update_edge_use_case = providers.Factory(
+        PartialUpdateEdgeUseCase,
         node_repo=node_repository,
     )

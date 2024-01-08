@@ -12,12 +12,14 @@ from map_admin.application.boundaries import (
     DeleteNodeInputBoundary,
     ListEdgesInputBoundary,
     ListNodesInputBoundary,
+    PartialUpdateEdgeInputBoundary,
     PartialUpdateNodeInputBoundary,
 )
 from map_admin.application.dtos import (
     CreateEdgeInputData,
     CreateNodeInputData,
     DeleteNodeInputData,
+    PartialUpdateEdgeInputData,
     PartialUpdateNodeInputData,
 )
 from map_admin.presentation.presenters import (
@@ -204,3 +206,56 @@ async def create_edge(
             detail="Already exsiting edge",
         )
     return "OK"
+
+
+class PartialUpdateEdgeRequest(BaseModel):
+    node_ids: tuple[int, int]
+    vertical_distance: float | None = None
+    horizontal_distance: float | None = None
+    is_stair: bool | None = None
+    is_step: bool | None = None
+    quality: Literal["상", "중", "하"] | None = None
+
+
+@router.patch("/edges")
+@inject
+async def partial_update_edge(
+    edge: PartialUpdateEdgeRequest,
+    use_case: PartialUpdateEdgeInputBoundary = Depends(
+        Provide[Container.partial_update_edge_use_case]
+    ),
+) -> None:
+    try:
+        use_case.execute(
+            input_data=PartialUpdateEdgeInputData(
+                node_ids=edge.node_ids,
+                vertical_distance=(
+                    None
+                    if edge.vertical_distance is None
+                    else Decimal(str(edge.vertical_distance))
+                ),
+                horizontal_distance=(
+                    None
+                    if edge.horizontal_distance is None
+                    else Decimal(str(edge.horizontal_distance))
+                ),
+                is_stair=edge.is_stair,
+                is_step=edge.is_step,
+                quality=edge.quality,
+            ),
+        )
+    except PartialUpdateEdgeInputBoundary.NodeNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Node ID",
+        )
+    except PartialUpdateEdgeInputBoundary.ConnectingSameNodeError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Same node",
+        )
+    except PartialUpdateEdgeInputBoundary.EdgeNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Edge not found",
+        )

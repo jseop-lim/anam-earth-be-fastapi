@@ -7,6 +7,7 @@ from map_admin.application.boundaries import (
     ListEdgesOutputBoundary,
     ListNodesInputBoundary,
     ListNodesOutputBoundary,
+    PartialUpdateEdgeInputBoundary,
     PartialUpdateNodeInputBoundary,
 )
 from map_admin.application.dtos import (
@@ -16,6 +17,7 @@ from map_admin.application.dtos import (
     DeleteNodeInputData,
     ListEdgesOutputData,
     ListNodesOutputData,
+    PartialUpdateEdgeInputData,
     PartialUpdateNodeInputData,
 )
 from map_admin.application.repositories import NodeRepository
@@ -23,6 +25,7 @@ from map_admin.domain.entities import Edge, Node
 from map_admin.domain.exceptions import (
     AlreadyConnectedNodesError,
     ConnectingSameNodeError,
+    NoEdgeExistsBetweenNodesError,
 )
 from map_admin.domain.value_objects import Point, RoadQuality
 
@@ -80,9 +83,9 @@ class PartialUpdateNodeUseCase(PartialUpdateNodeInputBoundary):
         except NodeRepository.NodeNotFoundError:
             raise super().NodeNotFoundError
 
-        if input_data.name:
+        if input_data.name is not None:
             node.update_name(name=input_data.name)
-        if input_data.longitude or input_data.latitude:
+        if input_data.longitude is not None or input_data.latitude is not None:
             node.update_point(
                 point=Point(
                     longitude=input_data.longitude or node.point.longitude,
@@ -164,5 +167,39 @@ class CreateEdgeUseCase(CreateEdgeInputBoundary):
             raise super().ConnectingSameNodeError
         except AlreadyConnectedNodesError:
             raise super().AlreadyConnectedNodesError
+
+        self.node_repo.update_node(node=nodes[0])
+
+
+class PartialUpdateEdgeUseCase(PartialUpdateEdgeInputBoundary):
+    def __init__(self, node_repo: NodeRepository) -> None:
+        self.node_repo = node_repo
+
+    def execute(self, input_data: PartialUpdateEdgeInputData) -> None:
+        try:
+            nodes: tuple[Node, Node] = (
+                self.node_repo.get_node_by_id(node_id=input_data.node_ids[0]),
+                self.node_repo.get_node_by_id(node_id=input_data.node_ids[1]),
+            )
+        except NodeRepository.NodeNotFoundError:
+            raise super().NodeNotFoundError
+
+        try:
+            nodes[0].update_edge(
+                other_node=nodes[1],
+                vertical_distance=input_data.vertical_distance,
+                horizontal_distance=input_data.horizontal_distance,
+                is_stair=input_data.is_stair,
+                is_step=input_data.is_step,
+                quality=(
+                    None
+                    if input_data.quality is None
+                    else RoadQuality(input_data.quality)
+                ),
+            )
+        except ConnectingSameNodeError:
+            raise super().ConnectingSameNodeError
+        except NoEdgeExistsBetweenNodesError:
+            raise super().EdgeNotFoundError
 
         self.node_repo.update_node(node=nodes[0])
