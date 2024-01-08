@@ -69,9 +69,9 @@ async def create_node(
 
 
 class PartialUpdateNodeRequest(BaseModel):
-    name: str | None
-    longitude: float | None
-    latitude: float | None
+    name: str | None = None
+    longitude: float | None = None
+    latitude: float | None = None
 
 
 @router.patch(
